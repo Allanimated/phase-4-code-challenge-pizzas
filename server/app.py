@@ -11,11 +11,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
 CORS(app)
-
 migrate = Migrate(app, db)
 db.init_app(app)
 
 api = Api(app)
+
+
+class Home(Resource):
+    def get(self):
+        return {}, 200
 
 
 class Restaurants(Resource):
@@ -61,11 +65,12 @@ class RestaurantPizzas(Resource):
             respiz = RestaurantPizza(**data)
             db.session.add(respiz)
             db.session.commit()
-            return data.to_dict(), 204
+            return respiz.to_dict(), 201
         except ValueError as err:
             return {"errors": str(err)}, 401
 
 
+api.add_resource(Home, '/', endpoint='/')
 api.add_resource(Restaurants, '/restaurants', endpoint='restaurants')
 api.add_resource(RestaurantById, '/restaurants/<int:id>', endpoint='<int:id>')
 api.add_resource(Pizzas, '/pizzas', endpoint='pizzas')
